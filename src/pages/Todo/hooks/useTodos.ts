@@ -1,112 +1,173 @@
 import { gql, type ApolloCache, useMutation, useQuery } from "@apollo/client";
 
-export type Todo = { id: string; title: string; completed: boolean };
+export type Todo = {
+  id: string;
+  title: string;
+  completed: boolean;
+  estimatedMinutes: number;
+  tags: string[];
+  category: string;
+  type: "TODO" | "NOT_TODO";
+};
 
-const GET_TODOS = gql`
-  query GetTodos {
-    todos {
+const GET_TASKS = gql`
+  query GetTasks($type: TaskType!) {
+    tasks(type: $type) {
       id
       title
       completed
+      estimatedMinutes
+      tags
+      category
+      type
     }
   }
 `;
 
-const ADD_TODO = gql`
-  mutation AddTodo($title: String!) {
-    addTodo(title: $title) {
+const ADD_TASK = gql`
+  mutation AddTask(
+    $title: String!
+    $type: TaskType!
+    $category: String
+    $estimatedMinutes: Int
+    $tags: [String!]
+  ) {
+    addTask(
+      title: $title
+      type: $type
+      category: $category
+      estimatedMinutes: $estimatedMinutes
+      tags: $tags
+    ) {
       id
       title
       completed
+      estimatedMinutes
+      tags
+      category
+      type
     }
   }
 `;
 
-const TOGGLE_TODO = gql`
+const TOGGLE_TASK = gql`
   mutation Toggle($id: ID!) {
-    toggleTodo(id: $id) {
+    toggleTask(id: $id) {
       id
       completed
     }
   }
 `;
 
-const DELETE_TODO = gql`
+const DELETE_TASK = gql`
   mutation Delete($id: ID!) {
-    deleteTodo(id: $id)
+    deleteTask(id: $id)
   }
 `;
 
 export function useTodos() {
-  const { data, loading, error } = useQuery<{ todos: Todo[] }>(GET_TODOS);
+  const listVars = { type: "TODO" as const };
+  const { data, loading, error } = useQuery<{ tasks: Todo[] }>(GET_TASKS, {
+    variables: listVars,
+  });
 
-  const [addTodoMutation] = useMutation<{ addTodo: Todo }, { title: string }>(
-    ADD_TODO,
+  const [addTaskMutation] = useMutation<
+    { addTask: Todo },
     {
-      update(cache: ApolloCache<unknown>, { data }) {
-        if (!data?.addTodo) return;
-        const existing = cache.readQuery<{ todos: Todo[] }>({
-          query: GET_TODOS,
-        });
-        if (existing?.todos) {
-          cache.writeQuery<{ todos: Todo[] }>({
-            query: GET_TODOS,
-            data: { todos: [data.addTodo, ...existing.todos] },
-          });
-        }
-      },
-    },
-  );
-
-  const [toggleTodoMutation] = useMutation<
-    { toggleTodo: Pick<Todo, "id" | "completed"> },
-    { id: string }
-  >(TOGGLE_TODO);
-
-  const [deleteTodoMutation] = useMutation<
-    { deleteTodo: boolean },
-    { id: string }
-  >(DELETE_TODO, {
-    update(cache: ApolloCache<unknown>, _result, { variables }) {
-      if (!variables?.id) return;
-      const existing = cache.readQuery<{ todos: Todo[] }>({ query: GET_TODOS });
-      if (existing?.todos) {
-        cache.writeQuery<{ todos: Todo[] }>({
-          query: GET_TODOS,
-          data: { todos: existing.todos.filter((t) => t.id !== variables.id) },
+      title: string;
+      type: "TODO";
+      category?: string | null;
+      estimatedMinutes?: number | null;
+      tags?: string[] | null;
+    }
+  >(ADD_TASK, {
+    update(cache: ApolloCache<unknown>, { data }) {
+      if (!data?.addTask) return;
+      const existing = cache.readQuery<{ tasks: Todo[] }>({
+        query: GET_TASKS,
+        variables: listVars,
+      });
+      if (existing?.tasks) {
+        cache.writeQuery<{ tasks: Todo[] }>({
+          query: GET_TASKS,
+          variables: listVars,
+          data: { tasks: [data.addTask, ...existing.tasks] },
         });
       }
     },
   });
 
-  async function addTodo(title: string) {
+  const [toggleTaskMutation] = useMutation<
+    { toggleTask: Pick<Todo, "id" | "completed"> },
+    { id: string }
+  >(TOGGLE_TASK);
+
+  const [deleteTaskMutation] = useMutation<
+    { deleteTask: boolean },
+    { id: string }
+  >(DELETE_TASK, {
+    update(cache: ApolloCache<unknown>, _result, { variables }) {
+      if (!variables?.id) return;
+      const existing = cache.readQuery<{ tasks: Todo[] }>({
+        query: GET_TASKS,
+        variables: listVars,
+      });
+      if (existing?.tasks) {
+        cache.writeQuery<{ tasks: Todo[] }>({
+          query: GET_TASKS,
+          variables: listVars,
+          data: {
+            tasks: existing.tasks.filter((t) => t.id !== variables.id),
+          },
+        });
+      }
+    },
+  });
+
+  async function addTodo(
+    title: string,
+    options?: { category?: string; estimatedMinutes?: number; tags?: string[] },
+  ) {
     const trimmed = title.trim();
     if (!trimmed) return;
-    await addTodoMutation({
-      variables: { title: trimmed },
+    await addTaskMutation({
+      variables: {
+        title: trimmed,
+        type: "TODO",
+        category: options?.category ?? null,
+        estimatedMinutes: options?.estimatedMinutes ?? null,
+        tags: options?.tags ?? null,
+      },
       optimisticResponse: {
-        addTodo: {
+        addTask: {
           id: Math.random().toString(36),
           title: trimmed,
           completed: false,
+          estimatedMinutes: 0,
+          tags: options?.tags ?? [],
+          category: options?.category ?? "General",
+          type: "TODO",
         },
       },
     });
   }
 
   async function toggleTodo(id: string, currentCompleted: boolean) {
-    await toggleTodoMutation({
+    await toggleTaskMutation({
       variables: { id },
-      optimisticResponse: { toggleTodo: { id, completed: !currentCompleted } },
+      optimisticResponse: { toggleTask: { id, completed: !currentCompleted } },
     });
   }
 
   async function deleteTodo(id: string) {
-    await deleteTodoMutation({ variables: { id } });
+    await deleteTaskMutation({
+      variables: { id },
+      optimisticResponse: { deleteTask: true },
+    });
   }
 
   return {
-    todos: data?.todos ?? [],
+    todos: data?.tasks ?? [],
     loading,
     error,
     addTodo,

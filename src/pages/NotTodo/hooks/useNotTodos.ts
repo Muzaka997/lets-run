@@ -2,96 +2,103 @@ import { gql, type ApolloCache, useMutation, useQuery } from "@apollo/client";
 
 export type NotTodo = { id: string; title: string; completed: boolean };
 
-const GET_NOT_TODOS = gql`
-  query GetNotTodos {
-    notTodos {
+const GET_TASKS = gql`
+  query GetTasks($type: TaskType!) {
+    tasks(type: $type) {
       id
       title
       completed
+      type
     }
   }
 `;
 
-const ADD_NOT_TODO = gql`
-  mutation AddNotTodo($title: String!) {
-    addNotTodo(title: $title) {
+const ADD_TASK = gql`
+  mutation AddTask($title: String!, $type: TaskType!) {
+    addTask(title: $title, type: $type) {
       id
       title
       completed
+      type
     }
   }
 `;
 
-const TOGGLE_NOT_TODO = gql`
-  mutation ToggleNotTodo($id: ID!) {
-    toggleNotTodo(id: $id) {
+const TOGGLE_TASK = gql`
+  mutation Toggle($id: ID!) {
+    toggleTask(id: $id) {
       id
       completed
     }
   }
 `;
 
-const DELETE_NOT_TODO = gql`
-  mutation DeleteNotTodo($id: ID!) {
-    deleteNotTodo(id: $id)
+const DELETE_TASK = gql`
+  mutation Delete($id: ID!) {
+    deleteTask(id: $id)
   }
 `;
 
 export function useNotTodos() {
-  const { data, loading, error } = useQuery<{ notTodos: NotTodo[] }>(
-    GET_NOT_TODOS,
-  );
+  const variables = { type: "NOT_TODO" as const };
+  const { data, loading, error } = useQuery<{ tasks: NotTodo[] }>(GET_TASKS, {
+    variables,
+  });
 
-  const [addMutation] = useMutation<{ addNotTodo: NotTodo }, { title: string }>(
-    ADD_NOT_TODO,
-    {
-      update(cache: ApolloCache<unknown>, { data }) {
-        if (!data?.addNotTodo) return;
-        const existing = cache.readQuery<{ notTodos: NotTodo[] }>({
-          query: GET_NOT_TODOS,
+  const [addMutation] = useMutation<
+    { addTask: NotTodo },
+    { title: string; type: "NOT_TODO" }
+  >(ADD_TASK, {
+    update(cache: ApolloCache<unknown>, { data }) {
+      if (!data?.addTask) return;
+      const existing = cache.readQuery<{ tasks: NotTodo[] }>({
+        query: GET_TASKS,
+        variables,
+      });
+      if (existing?.tasks) {
+        cache.writeQuery<{ tasks: NotTodo[] }>({
+          query: GET_TASKS,
+          variables,
+          data: { tasks: [data.addTask, ...existing.tasks] },
         });
-        if (existing?.notTodos) {
-          cache.writeQuery<{ notTodos: NotTodo[] }>({
-            query: GET_NOT_TODOS,
-            data: { notTodos: [data.addNotTodo, ...existing.notTodos] },
+      }
+    },
+  });
+
+  const [toggleMutation] = useMutation<
+    { toggleTask: Pick<NotTodo, "id" | "completed"> },
+    { id: string }
+  >(TOGGLE_TASK);
+
+  const [deleteMutation] = useMutation<{ deleteTask: boolean }, { id: string }>(
+    DELETE_TASK,
+    {
+      update(cache: ApolloCache<unknown>, _result, { variables }) {
+        if (!variables?.id) return;
+        const existing = cache.readQuery<{ tasks: NotTodo[] }>({
+          query: GET_TASKS,
+          variables,
+        });
+        if (existing?.tasks) {
+          cache.writeQuery<{ tasks: NotTodo[] }>({
+            query: GET_TASKS,
+            variables,
+            data: {
+              tasks: existing.tasks.filter((t) => t.id !== variables.id),
+            },
           });
         }
       },
     },
   );
 
-  const [toggleMutation] = useMutation<
-    { toggleNotTodo: Pick<NotTodo, "id" | "completed"> },
-    { id: string }
-  >(TOGGLE_NOT_TODO);
-
-  const [deleteMutation] = useMutation<
-    { deleteNotTodo: boolean },
-    { id: string }
-  >(DELETE_NOT_TODO, {
-    update(cache: ApolloCache<unknown>, _result, { variables }) {
-      if (!variables?.id) return;
-      const existing = cache.readQuery<{ notTodos: NotTodo[] }>({
-        query: GET_NOT_TODOS,
-      });
-      if (existing?.notTodos) {
-        cache.writeQuery<{ notTodos: NotTodo[] }>({
-          query: GET_NOT_TODOS,
-          data: {
-            notTodos: existing.notTodos.filter((t) => t.id !== variables.id),
-          },
-        });
-      }
-    },
-  });
-
   async function addNotTodo(title: string) {
     const trimmed = title.trim();
     if (!trimmed) return;
     await addMutation({
-      variables: { title: trimmed },
+      variables: { title: trimmed, type: "NOT_TODO" },
       optimisticResponse: {
-        addNotTodo: {
+        addTask: {
           id: Math.random().toString(36),
           title: trimmed,
           completed: false,
@@ -103,9 +110,7 @@ export function useNotTodos() {
   async function toggleNotTodo(id: string, currentCompleted: boolean) {
     await toggleMutation({
       variables: { id },
-      optimisticResponse: {
-        toggleNotTodo: { id, completed: !currentCompleted },
-      },
+      optimisticResponse: { toggleTask: { id, completed: !currentCompleted } },
     });
   }
 
@@ -114,7 +119,7 @@ export function useNotTodos() {
   }
 
   return {
-    notTodos: data?.notTodos ?? [],
+    notTodos: data?.tasks ?? [],
     loading,
     error,
     addNotTodo,
