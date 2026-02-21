@@ -16,6 +16,7 @@ export default function NavBar() {
             <VLink to="/todos">Todos</VLink>
             <VLink to="/not-todos">Not Todos</VLink>
             <VLink to="/suggestions">Suggestions</VLink>
+            <VLink to="/suggestions/not-todos">Not-Todo Suggestions</VLink>
           </VNav>
           <SidebarFooter>
             <div style={{ marginTop: 12 }}>
