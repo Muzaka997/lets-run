@@ -10,7 +10,7 @@ export type Suggestion = {
 
 const GET_SUGGESTIONS = gql`
   query GetSuggestions($category: String, $limit: Int) {
-    suggestions(category: $category, limit: $limit) {
+    todoSuggestions(category: $category, limit: $limit) {
       id
       title
       category
@@ -44,10 +44,11 @@ const GET_TASKS = gql`
 `;
 
 export function useSuggestions(category?: string, limit?: number) {
-  const { data, loading, error } = useQuery<{ suggestions: Suggestion[] }>(
-    GET_SUGGESTIONS,
-    { variables: { category: category ?? null, limit: limit ?? null } },
-  );
+  const { data, loading, error } = useQuery<{
+    todoSuggestions: Suggestion[];
+  }>(GET_SUGGESTIONS, {
+    variables: { category: category ?? null, limit: limit ?? null },
+  });
 
   const [addSuggestionToTasks] = useMutation<
     { addSuggestionToTasks: { id: string; title: string; completed: boolean } },
@@ -62,7 +63,7 @@ export function useSuggestions(category?: string, limit?: number) {
   }
 
   return {
-    suggestions: data?.suggestions ?? [],
+    suggestions: data?.todoSuggestions ?? [],
     loading,
     error,
     addToMyTodos,

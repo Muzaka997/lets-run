@@ -15,7 +15,7 @@ export default function NavBar() {
             </VLink>
             <VLink to="/todos">Todos</VLink>
             <VLink to="/not-todos">Not Todos</VLink>
-            <VLink to="/suggestions">Suggestions</VLink>
+            <VLink to="/suggestions">Todo Suggestions</VLink>
             <VLink to="/suggestions/not-todos">Not-Todo Suggestions</VLink>
           </VNav>
           <SidebarFooter>
