@@ -10,6 +10,12 @@ import {
   TodoRow,
   TodoSmall,
   TodoHeading,
+  TodoButton,
+  TodoDangerButton,
+  TodoDetails,
+  TodoMeta,
+  TagRow,
+  TagChip,
 } from "./TodoStyles";
 import { useTodos, type Todo } from "./hooks/useTodos";
 import { useAuth } from "../Auth/hooks/useAuth";
@@ -58,14 +64,14 @@ export default function TodosPage() {
               <>Not signed in</>
             )}
           </TodoSmall>
-          <button
+          <TodoButton
             type="button"
             onClick={() => {
               logout();
             }}
           >
             Log out
-          </button>
+          </TodoButton>
         </TodoRow>
       </TodoCard>
       <TodoHeading>Todos</TodoHeading>
@@ -94,7 +100,7 @@ export default function TodosPage() {
           onChange={(e) => setTagsText(e.target.value)}
           placeholder="Tags (comma-separated)"
         />
-        <button type="submit">Add</button>
+        <TodoButton type="submit">Add</TodoButton>
       </TodoForm>
       <TodoList>
         {todos.map((t: Todo) => (
@@ -104,38 +110,22 @@ export default function TodosPage() {
               checked={t.completed}
               onChange={() => toggleTodo(t.id, t.completed)}
             />
-            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <TodoDetails>
               <TodoTitle $completed={t.completed}>{t.title}</TodoTitle>
-              <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>
+              <TodoMeta>
                 {t.category} • {t.estimatedMinutes ?? 0} min
-              </div>
+              </TodoMeta>
               {Array.isArray(t.tags) && t.tags.length > 0 ? (
-                <div
-                  style={{
-                    marginTop: 4,
-                    display: "flex",
-                    gap: 6,
-                    flexWrap: "wrap",
-                  }}
-                >
+                <TagRow>
                   {t.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      style={{
-                        fontSize: 11,
-                        padding: "2px 6px",
-                        borderRadius: 8,
-                        background: "#eef2f7",
-                        color: "#334155",
-                      }}
-                    >
-                      #{tag}
-                    </span>
+                    <TagChip key={tag}>#{tag}</TagChip>
                   ))}
-                </div>
+                </TagRow>
               ) : null}
-            </div>
-            <button onClick={() => deleteTodo(t.id)}>Delete</button>
+            </TodoDetails>
+            <TodoDangerButton onClick={() => deleteTodo(t.id)}>
+              Delete
+            </TodoDangerButton>
           </TodoItem>
         ))}
       </TodoList>

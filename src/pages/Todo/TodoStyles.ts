@@ -1,18 +1,24 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 export const TodoWrap = styled.div`
   max-width: 820px;
   margin: 2rem auto;
   padding: 0 16px;
+  animation: ${fadeIn} 0.35s ease-out;
 `;
 
 export const TodoCard = styled.div`
   margin-bottom: 16px;
   padding: 12px 16px;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
 `;
 
 export const TodoRow = styled.div`
@@ -30,12 +36,19 @@ export const TodoSmall = styled.div`
 
 export const TodoHeading = styled.h1`
   margin: 8px 0 12px;
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 `;
 
 export const TodoForm = styled.form`
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 `;
 
 export const TodoInput = styled.input`
@@ -52,6 +65,47 @@ export const TodoInput = styled.input`
   }
 `;
 
+export const TodoButton = styled.button`
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #6366f1;
+  background: #6366f1;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.25);
+  }
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  }
+`;
+
+export const TodoDangerButton = styled.button`
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #ef4444;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  &:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+  }
+`;
+
 export const TodoList = styled.ul`
   list-style: none;
   padding: 0;
@@ -61,13 +115,45 @@ export const TodoList = styled.ul`
 export const TodoItem = styled.li`
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eef2f7;
+  transition: background 0.15s ease;
+  &:hover {
+    background: #fafafa;
+    color: black;
+  }
 `;
 
 export const TodoTitle = styled.span<{ $completed: boolean }>`
   text-decoration: ${({ $completed }) =>
     $completed ? "line-through" : "none"};
   flex: 1;
+`;
+
+export const TodoDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`;
+
+export const TodoMeta = styled.div`
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 2px;
+`;
+
+export const TagRow = styled.div`
+  margin-top: 4px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+`;
+
+export const TagChip = styled.span`
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #334155;
 `;

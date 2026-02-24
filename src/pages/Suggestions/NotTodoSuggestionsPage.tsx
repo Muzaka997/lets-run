@@ -1,4 +1,16 @@
 import { useNotTodoSuggestions } from "./hooks/useNotTodoSuggestions";
+import {
+  SuggestionsWrap,
+  SuggestionsHeading,
+  SuggestionsList,
+  SuggestionsItem,
+  SuggestionsDetails,
+  SuggestionsTitle,
+  SuggestionsMeta,
+  TagRow,
+  TagChip,
+  SuggestionsButton,
+} from "./SuggestionsStyles";
 
 export default function NotTodoSuggestionsPage() {
   const { suggestions, loading, error, addToMyNotTodos } =
@@ -8,32 +20,33 @@ export default function NotTodoSuggestionsPage() {
   if (error) return <div>Error loading suggestions</div>;
 
   return (
-    <div>
-      <h2>Suggested Not-Todos</h2>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+    <SuggestionsWrap>
+      <SuggestionsHeading>Suggested Not-Todos</SuggestionsHeading>
+      <SuggestionsList>
         {suggestions.map((s) => (
-          <li key={s.id} style={{ margin: "8px 0", display: "flex", gap: 12 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 600 }}>{s.title}</div>
-              <div style={{ fontSize: 12, opacity: 0.7 }}>
+          <SuggestionsItem key={s.id}>
+            <SuggestionsDetails>
+              <SuggestionsTitle>{s.title}</SuggestionsTitle>
+              <SuggestionsMeta>
                 {s.category} • {s.estimatedMinutes} min
-              </div>
+              </SuggestionsMeta>
               {s.tags?.length ? (
-                <div style={{ marginTop: 4, fontSize: 12 }}>
+                <TagRow>
                   {s.tags.map((t) => (
-                    <span key={t} style={{ marginRight: 6, opacity: 0.8 }}>
-                      #{t}
-                    </span>
+                    <TagChip key={t}>#{t}</TagChip>
                   ))}
-                </div>
+                </TagRow>
               ) : null}
-            </div>
-            <button type="button" onClick={() => addToMyNotTodos(s.id)}>
+            </SuggestionsDetails>
+            <SuggestionsButton
+              type="button"
+              onClick={() => addToMyNotTodos(s.id)}
+            >
               Add to My Not-Todos
-            </button>
-          </li>
+            </SuggestionsButton>
+          </SuggestionsItem>
         ))}
-      </ul>
-    </div>
+      </SuggestionsList>
+    </SuggestionsWrap>
   );
 }

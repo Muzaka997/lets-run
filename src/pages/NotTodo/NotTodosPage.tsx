@@ -10,6 +10,12 @@ import {
   NotTodoList,
   NotTodoItem,
   NotTodoTitle,
+  NotTodoButton,
+  NotTodoDangerButton,
+  NotTodoDetails,
+  NotTodoMeta,
+  TagRow,
+  TagChip,
 } from "./NotTodoStyles";
 import { useNotTodos, type NotTodo } from "./hooks/useNotTodos";
 import { useAuth } from "../Auth/hooks/useAuth";
@@ -59,14 +65,14 @@ export default function NotTodosPage() {
               <>Not signed in</>
             )}
           </NotTodoSmall>
-          <button
+          <NotTodoButton
             type="button"
             onClick={() => {
               logout();
             }}
           >
             Log out
-          </button>
+          </NotTodoButton>
         </NotTodoRow>
       </NotTodoCard>
       <NotTodoHeading>Not Todos</NotTodoHeading>
@@ -95,7 +101,7 @@ export default function NotTodosPage() {
           onChange={(e) => setTagsText(e.target.value)}
           placeholder="Tags (comma-separated)"
         />
-        <button type="submit">Add</button>
+        <NotTodoButton type="submit">Add</NotTodoButton>
       </NotTodoForm>
       <NotTodoList>
         {notTodos.map((t: NotTodo) => (
@@ -105,38 +111,22 @@ export default function NotTodosPage() {
               checked={t.completed}
               onChange={() => toggleNotTodo(t.id, t.completed)}
             />
-            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <NotTodoDetails>
               <NotTodoTitle $completed={t.completed}>{t.title}</NotTodoTitle>
-              <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>
+              <NotTodoMeta>
                 {t.category} • {t.estimatedMinutes ?? 0} min
-              </div>
+              </NotTodoMeta>
               {Array.isArray(t.tags) && t.tags.length > 0 ? (
-                <div
-                  style={{
-                    marginTop: 4,
-                    display: "flex",
-                    gap: 6,
-                    flexWrap: "wrap",
-                  }}
-                >
+                <TagRow>
                   {t.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      style={{
-                        fontSize: 11,
-                        padding: "2px 6px",
-                        borderRadius: 8,
-                        background: "#eef2f7",
-                        color: "#334155",
-                      }}
-                    >
-                      #{tag}
-                    </span>
+                    <TagChip key={tag}>#{tag}</TagChip>
                   ))}
-                </div>
+                </TagRow>
               ) : null}
-            </div>
-            <button onClick={() => deleteNotTodo(t.id)}>Delete</button>
+            </NotTodoDetails>
+            <NotTodoDangerButton onClick={() => deleteNotTodo(t.id)}>
+              Delete
+            </NotTodoDangerButton>
           </NotTodoItem>
         ))}
       </NotTodoList>
