@@ -8,6 +8,7 @@ import SuggestionsPage from "./pages/Suggestions/SuggestionsPage";
 import NotTodoSuggestionsPage from "./pages/Suggestions/NotTodoSuggestionsPage";
 import HomePage from "./pages/Home/HomePage";
 import { useAuth } from "./pages/Auth/hooks/useAuth";
+import CalendarPage from "./pages/Calendar/CalendarPage";
 import SidebarLayout from "./navigation/SidebarLayout";
 
 function RequireAuth({ children }: { children: ReactElement }) {
@@ -38,6 +39,7 @@ export default function App() {
           path="suggestions/not-todos"
           element={<NotTodoSuggestionsPage />}
         />
+        <Route path="calendar" element={<CalendarPage />} />
       </Route>
       <Route path="*" element={<Navigate to={me ? "/" : "/auth"} replace />} />
     </Routes>
