@@ -86,28 +86,94 @@ export function useCalendar(range: { timeMin: string; timeMax: string }) {
     { variables: range },
   );
 
-  const [addEventMutation] = useMutation<{ addEvent: CalEvent }>(ADD_EVENT);
-  const [updateEventMutation] = useMutation<{ updateEvent: CalEvent }>(
-    UPDATE_EVENT,
-  );
-  const [deleteEventMutation] = useMutation<{ deleteEvent: boolean }>(
-    DELETE_EVENT,
-  );
+  const [addEventMutation] = useMutation<
+    { addEvent: CalEvent },
+    Omit<CalEvent, "id">
+  >(ADD_EVENT, {
+    // Keep UI snappy: inject the new event into the current cache immediately
+    update(cache, { data }) {
+      const created = data?.addEvent;
+      if (!created) return;
+      cache.updateQuery<{ events: CalEvent[] }>(
+        { query: EVENTS, variables: range },
+        (prev) => (prev ? { events: [created, ...prev.events] } : prev),
+      );
+    },
+  });
+
+  const [updateEventMutation] = useMutation<
+    { updateEvent: CalEvent },
+    { id: string } & Partial<Omit<CalEvent, "id">>
+  >(UPDATE_EVENT, {
+    update(cache, { data }) {
+      const updated = data?.updateEvent;
+      if (!updated) return;
+      cache.updateQuery<{ events: CalEvent[] }>(
+        { query: EVENTS, variables: range },
+        (prev) =>
+          prev
+            ? {
+                events: prev.events.map((e) =>
+                  e.id === updated.id ? { ...e, ...updated } : e,
+                ),
+              }
+            : prev,
+      );
+    },
+  });
+
+  const [deleteEventMutation] = useMutation<
+    { deleteEvent: boolean },
+    { id: string }
+  >(DELETE_EVENT, {
+    update(cache, _result, { variables }) {
+      if (!variables?.id) return;
+      cache.updateQuery<{ events: CalEvent[] }>(
+        { query: EVENTS, variables: range },
+        (prev) =>
+          prev
+            ? { events: prev.events.filter((e) => e.id !== variables.id) }
+            : prev,
+      );
+    },
+  });
 
   async function addEvent(e: Omit<CalEvent, "id">) {
     await addEventMutation({
       variables: e,
+      optimisticResponse: {
+        addEvent: {
+          id: `temp-${Date.now()}`,
+          ...e,
+        },
+      },
     });
+    // Still refetch to reconcile server truth (IDs, ordering)
     await refetch();
   }
 
   async function updateEvent(id: string, patch: Partial<Omit<CalEvent, "id">>) {
-    await updateEventMutation({ variables: { id, ...patch } });
+    await updateEventMutation({
+      variables: { id, ...patch },
+      optimisticResponse: {
+        updateEvent: {
+          id,
+          title: patch.title ?? "",
+          start: patch.start ?? "",
+          end: patch.end ?? "",
+          kind: (patch.kind as CalEvent["kind"]) ?? "TODO",
+          notes: patch.notes ?? null,
+        },
+      },
+    });
     await refetch();
   }
 
   async function deleteEvent(id: string) {
-    await deleteEventMutation({ variables: { id } });
+    await deleteEventMutation({
+      variables: { id },
+      optimisticResponse: { deleteEvent: true },
+    });
     await refetch();
   }
 

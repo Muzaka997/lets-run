@@ -26,11 +26,12 @@ export const CalHeading = styled.h1`
 export const CalCard = styled.div`
   margin-bottom: 16px;
   padding: 12px 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 14px;
-  background: black;
-  color: white;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+  background: rgba(2, 6, 23, 0.7);
+  color: #e5e7eb;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(6px);
 `;
 
 export const Row = styled.div`
@@ -43,42 +44,49 @@ export const Row = styled.div`
 export const Input = styled.input`
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.3);
   border-radius: 10px;
   font-size: 14px;
   outline: none;
+  color: #e5e7eb;
+  background: rgba(2, 6, 23, 0.55);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease,
     background 0.15s ease;
+  &::placeholder {
+    color: #94a3b8;
+  }
   &:hover {
-    background: #fafafa;
-    color: black;
+    background: rgba(2, 6, 23, 0.6);
+    border-color: rgba(148, 163, 184, 0.45);
   }
   &:focus {
     border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
   }
 `;
 
 export const Select = styled.select`
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.3);
   border-radius: 10px;
   font-size: 14px;
   outline: none;
+  color: #e5e7eb;
+  background: rgba(2, 6, 23, 0.55);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease,
     background 0.15s ease;
   &:hover {
-    background: black;
-    color: white;
+    background: rgba(2, 6, 23, 0.6);
+    border-color: rgba(148, 163, 184, 0.45);
   }
   &:focus {
     border-color: #22c55e;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
   }
 `;
 
@@ -134,31 +142,33 @@ export const Item = styled.li`
   align-items: center;
   gap: 12px;
   padding: 14px 12px;
-  border: 1px solid #eef2f7;
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 12px;
-  background: black;
-  color: white;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  background: rgba(2, 6, 23, 0.6);
+  color: #e5e7eb;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.25);
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    border-color 0.15s ease;
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-    background: #fbfdff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.35);
+    background: rgba(2, 6, 23, 0.75);
+    border-color: rgba(148, 163, 184, 0.4);
   }
 `;
 
 export const Title = styled.div`
   font-weight: 700;
-  color: #0f172a;
+  color: #e5e7eb;
 `;
 
 export const Meta = styled.div`
   font-size: 13px;
   margin-top: 4px;
-  color: #475569; /* slate-600 for better contrast */
+  color: #94a3b8;
 `;
 
 export const EventDetails = styled.div`
