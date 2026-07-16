@@ -32,13 +32,18 @@ export default function AuthPage() {
 
   async function onAuth(act: "login" | "signup") {
     if (!email || !password) return;
-    if (act === "login") {
-      await login(email, password);
-    } else {
-      await signup(email, password, name || email.split("@")[0], gender);
+    try {
+      if (act === "login") {
+        await login(email, password);
+      } else {
+        await signup(email, password, name || email.split("@")[0], gender);
+      }
+      // On success, go back to intended page
+      navigate(from, { replace: true });
+    } catch {
+      // Failure is already surfaced to the user via `authError` (shown in the
+      // Note below). Swallow here so it doesn't become an unhandled rejection.
     }
-    // On success, go back to intended page
-    navigate(from, { replace: true });
   }
 
   return (
