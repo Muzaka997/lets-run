@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   CalWrap,
   CalHeading,
+  CalSubhead,
   CalCard,
   Row,
   Input,
@@ -17,6 +18,7 @@ import {
   ErrorText,
 } from "./CalendarStyles";
 import { useCalendar } from "./hooks/useCalendar";
+import EmptyState from "../../ui/EmptyState";
 
 function startOfWeek(d: Date) {
   const date = new Date(d);
@@ -87,6 +89,7 @@ export default function CalendarPage() {
   return (
     <CalWrap>
       <CalHeading>My Week</CalHeading>
+      <CalSubhead>Plan your todos and not-todos across the week.</CalSubhead>
       <CalCard>
         <Row>
           <label>
@@ -137,15 +140,24 @@ export default function CalendarPage() {
         </Row>
       </CalCard>
 
-      <CalCard>
-        {loading ? (
-          <div>Loading events…</div>
-        ) : error ? (
+      {loading ? (
+        <CalCard>Loading events…</CalCard>
+      ) : error ? (
+        <CalCard>
           <ErrorText>Error loading events</ErrorText>
-        ) : (
+        </CalCard>
+      ) : events.length === 0 ? (
+        <EmptyState
+          icon="🗓️"
+          accent="var(--grad-calendar)"
+          title="Nothing scheduled this week"
+          description="Add an event above to start planning your week. Pick a Todo or Not-Todo and give it a time."
+        />
+      ) : (
+        <CalCard>
           <List>
-            {events.map((ev) => (
-              <Item key={ev.id}>
+            {events.map((ev, i) => (
+              <Item key={ev.id} $i={i}>
                 <EventDetails>
                   <div
                     style={{ display: "flex", gap: 8, alignItems: "center" }}
@@ -168,8 +180,8 @@ export default function CalendarPage() {
               </Item>
             ))}
           </List>
-        )}
-      </CalCard>
+        </CalCard>
+      )}
     </CalWrap>
   );
 }

@@ -6,10 +6,8 @@ import {
   TodoItem,
   TodoTitle,
   TodoInput,
-  TodoCard,
-  TodoRow,
-  TodoSmall,
   TodoHeading,
+  TodoSubhead,
   TodoButton,
   TodoDangerButton,
   TodoDetails,
@@ -18,11 +16,11 @@ import {
   TagChip,
 } from "./TodoStyles";
 import { useTodos, type Todo } from "./hooks/useTodos";
-import { useAuth } from "../Auth/hooks/useAuth";
+import EmptyState from "../../ui/EmptyState";
+import Checkbox from "../../ui/Checkbox";
 
 export default function TodosPage() {
   const { todos, loading, error, addTodo, toggleTodo, deleteTodo } = useTodos();
-  const { me, logout } = useAuth();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("General");
   const [estimated, setEstimated] = useState<number | "">("");
@@ -53,28 +51,8 @@ export default function TodosPage() {
 
   return (
     <TodoWrap>
-      <TodoCard>
-        <TodoRow>
-          <TodoSmall>
-            {me ? (
-              <>
-                Signed in as <b>{me.email}</b>
-              </>
-            ) : (
-              <>Not signed in</>
-            )}
-          </TodoSmall>
-          <TodoButton
-            type="button"
-            onClick={() => {
-              logout();
-            }}
-          >
-            Log out
-          </TodoButton>
-        </TodoRow>
-      </TodoCard>
       <TodoHeading>Todos</TodoHeading>
+      <TodoSubhead>Everything you want to get done — one list.</TodoSubhead>
       <TodoForm onSubmit={onAdd}>
         <TodoInput
           value={title}
@@ -102,12 +80,22 @@ export default function TodosPage() {
         />
         <TodoButton type="submit">Add</TodoButton>
       </TodoForm>
+      {todos.length === 0 ? (
+        <div style={{ marginTop: 22 }}>
+          <EmptyState
+            icon="✓"
+            accent="var(--grad-todo)"
+            title="No todos yet"
+            description="Add your first task above, or grab a ready-made idea from Todo Suggestions."
+          />
+        </div>
+      ) : null}
       <TodoList>
-        {todos.map((t: Todo) => (
-          <TodoItem key={t.id}>
-            <input
-              type="checkbox"
+        {todos.map((t: Todo, i: number) => (
+          <TodoItem key={t.id} $i={i}>
+            <Checkbox
               checked={t.completed}
+              accent="var(--grad-todo)"
               onChange={() => toggleTodo(t.id, t.completed)}
             />
             <TodoDetails>

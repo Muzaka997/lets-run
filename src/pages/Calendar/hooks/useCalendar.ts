@@ -96,7 +96,7 @@ export function useCalendar(range: { timeMin: string; timeMax: string }) {
       if (!created) return;
       cache.updateQuery<{ events: CalEvent[] }>(
         { query: EVENTS, variables: range },
-        (prev) => (prev ? { events: [created, ...prev.events] } : prev),
+        (prev) => ({ events: [created, ...(prev?.events ?? [])] }),
       );
     },
   });
@@ -143,10 +143,11 @@ export function useCalendar(range: { timeMin: string; timeMax: string }) {
       variables: e,
       optimisticResponse: {
         addEvent: {
+          __typename: "CalendarEvent",
           id: `temp-${Date.now()}`,
           ...e,
         },
-      },
+      } as any,
     });
     // Still refetch to reconcile server truth (IDs, ordering)
     await refetch();
@@ -157,6 +158,7 @@ export function useCalendar(range: { timeMin: string; timeMax: string }) {
       variables: { id, ...patch },
       optimisticResponse: {
         updateEvent: {
+          __typename: "CalendarEvent",
           id,
           title: patch.title ?? "",
           start: patch.start ?? "",
@@ -164,7 +166,7 @@ export function useCalendar(range: { timeMin: string; timeMax: string }) {
           kind: (patch.kind as CalEvent["kind"]) ?? "TODO",
           notes: patch.notes ?? null,
         },
-      },
+      } as any,
     });
     await refetch();
   }

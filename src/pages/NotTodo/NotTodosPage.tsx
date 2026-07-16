@@ -1,10 +1,8 @@
 import { useState } from "react";
 import {
   NotTodoWrap,
-  NotTodoCard,
-  NotTodoRow,
-  NotTodoSmall,
   NotTodoHeading,
+  NotTodoSubhead,
   NotTodoForm,
   NotTodoInput,
   NotTodoList,
@@ -18,12 +16,12 @@ import {
   TagChip,
 } from "./NotTodoStyles";
 import { useNotTodos, type NotTodo } from "./hooks/useNotTodos";
-import { useAuth } from "../Auth/hooks/useAuth";
+import EmptyState from "../../ui/EmptyState";
+import Checkbox from "../../ui/Checkbox";
 
 export default function NotTodosPage() {
   const { notTodos, loading, error, addNotTodo, toggleNotTodo, deleteNotTodo } =
     useNotTodos();
-  const { me, logout } = useAuth();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("General");
   const [estimated, setEstimated] = useState<number | "">("");
@@ -54,28 +52,10 @@ export default function NotTodosPage() {
 
   return (
     <NotTodoWrap>
-      <NotTodoCard>
-        <NotTodoRow>
-          <NotTodoSmall>
-            {me ? (
-              <>
-                Signed in as <b>{me.email}</b>
-              </>
-            ) : (
-              <>Not signed in</>
-            )}
-          </NotTodoSmall>
-          <NotTodoButton
-            type="button"
-            onClick={() => {
-              logout();
-            }}
-          >
-            Log out
-          </NotTodoButton>
-        </NotTodoRow>
-      </NotTodoCard>
       <NotTodoHeading>Not Todos</NotTodoHeading>
+      <NotTodoSubhead>
+        The things to actively avoid — track what not to do.
+      </NotTodoSubhead>
       <NotTodoForm onSubmit={onAdd}>
         <NotTodoInput
           value={title}
@@ -103,12 +83,22 @@ export default function NotTodosPage() {
         />
         <NotTodoButton type="submit">Add</NotTodoButton>
       </NotTodoForm>
+      {notTodos.length === 0 ? (
+        <div style={{ marginTop: 22 }}>
+          <EmptyState
+            icon="✕"
+            accent="var(--grad-nottodo)"
+            title="Nothing to avoid yet"
+            description="Name a habit or distraction to steer clear of, or browse Not-Todo Suggestions for ideas."
+          />
+        </div>
+      ) : null}
       <NotTodoList>
-        {notTodos.map((t: NotTodo) => (
-          <NotTodoItem key={t.id}>
-            <input
-              type="checkbox"
+        {notTodos.map((t: NotTodo, i: number) => (
+          <NotTodoItem key={t.id} $i={i}>
+            <Checkbox
               checked={t.completed}
+              accent="var(--grad-nottodo)"
               onChange={() => toggleNotTodo(t.id, t.completed)}
             />
             <NotTodoDetails>

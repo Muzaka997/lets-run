@@ -5,7 +5,9 @@ import { useAuth, type User } from "./hooks/useAuth";
 import {
   AuthWrap,
   AuthCard,
+  BrandMark,
   Heading,
+  Subtitle,
   Row,
   Field,
   Label,
@@ -42,7 +44,9 @@ export default function AuthPage() {
   return (
     <AuthWrap>
       <AuthCard>
-        <Heading>Welcome</Heading>
+        <BrandMark>✺</BrandMark>
+        <Heading>Welcome to Momentum</Heading>
+        <Subtitle>Log in, or sign up to start building momentum.</Subtitle>
         <Row>
           <Field>
             <Label>Email</Label>
@@ -86,11 +90,11 @@ export default function AuthPage() {
           <Button type="button" onClick={() => onAuth("signup")}>
             Sign up
           </Button>
-          <Button type="button" onClick={() => onAuth("login")}>
+          <Button type="button" $primary onClick={() => onAuth("login")}>
             Log in
           </Button>
         </Actions>
-        <Note>{authError ?? "Not signed in"}</Note>
+        <Note $error={!!authError}>{authError ?? "Not signed in"}</Note>
       </AuthCard>
     </AuthWrap>
   );

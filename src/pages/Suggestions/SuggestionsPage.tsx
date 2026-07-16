@@ -2,6 +2,7 @@ import { useSuggestions } from "./hooks/useSuggestions";
 import {
   SuggestionsWrap,
   SuggestionsHeading,
+  SuggestionsSubhead,
   SuggestionsList,
   SuggestionsItem,
   SuggestionsDetails,
@@ -21,9 +22,12 @@ export default function SuggestionsPage() {
   return (
     <SuggestionsWrap>
       <SuggestionsHeading>Suggested Tasks</SuggestionsHeading>
+      <SuggestionsSubhead>
+        Handpicked ideas — add any of them to your todos in one tap.
+      </SuggestionsSubhead>
       <SuggestionsList>
-        {suggestions.map((s) => (
-          <SuggestionsItem key={s.id}>
+        {suggestions.map((s, i) => (
+          <SuggestionsItem key={s.id} $i={i}>
             <SuggestionsDetails>
               <SuggestionsTitle>{s.title}</SuggestionsTitle>
               <SuggestionsMeta>

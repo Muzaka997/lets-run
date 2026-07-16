@@ -2,6 +2,7 @@ import { useNotTodoSuggestions } from "./hooks/useNotTodoSuggestions";
 import {
   SuggestionsWrap,
   SuggestionsHeading,
+  SuggestionsSubhead,
   SuggestionsList,
   SuggestionsItem,
   SuggestionsDetails,
@@ -22,9 +23,12 @@ export default function NotTodoSuggestionsPage() {
   return (
     <SuggestionsWrap>
       <SuggestionsHeading>Suggested Not-Todos</SuggestionsHeading>
+      <SuggestionsSubhead>
+        Habits worth dropping — add any of them to your not-todos in one tap.
+      </SuggestionsSubhead>
       <SuggestionsList>
-        {suggestions.map((s) => (
-          <SuggestionsItem key={s.id}>
+        {suggestions.map((s, i) => (
+          <SuggestionsItem key={s.id} $i={i}>
             <SuggestionsDetails>
               <SuggestionsTitle>{s.title}</SuggestionsTitle>
               <SuggestionsMeta>

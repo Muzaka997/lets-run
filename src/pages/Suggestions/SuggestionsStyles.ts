@@ -1,43 +1,67 @@
 import styled, { keyframes } from "styled-components";
 
 const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
+const itemIn = keyframes`
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+`;
+
 export const SuggestionsWrap = styled.div`
-  max-width: 820px;
-  margin: 2rem auto;
-  padding: 0 16px;
+  max-width: 960px;
+  margin: 0 auto;
   animation: ${fadeIn} 0.35s ease-out;
 `;
 
-export const SuggestionsHeading = styled.h2`
-  margin: 8px 0 12px;
-  font-size: 26px;
+export const SuggestionsHeading = styled.h1`
+  margin: 0 0 4px;
+  font-size: 30px;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  background: linear-gradient(90deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+  background: var(--grad-brand);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  width: fit-content;
+`;
+
+export const SuggestionsSubhead = styled.p`
+  margin: 0 0 22px;
+  color: var(--text-2);
+  font-size: 14.5px;
 `;
 
 export const SuggestionsList = styled.ul`
   list-style: none;
   padding: 0;
-  margin-top: 12px;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 `;
 
-export const SuggestionsItem = styled.li`
+export const SuggestionsItem = styled.li<{ $i?: number }>`
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 8px;
-  border-bottom: 1px solid #eef2f7;
-  transition: background 0.15s ease;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  animation: ${itemIn} 0.35s ease both;
+  animation-delay: ${({ $i = 0 }) => Math.min($i * 45, 350)}ms;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+
   &:hover {
-    background: #fafafa;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
   }
 `;
 
@@ -47,16 +71,18 @@ export const SuggestionsDetails = styled.div`
 
 export const SuggestionsTitle = styled.div`
   font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
 `;
 
 export const SuggestionsMeta = styled.div`
-  font-size: 12px;
-  opacity: 0.8;
-  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin-top: 5px;
 `;
 
 export const TagRow = styled.div`
-  margin-top: 4px;
+  margin-top: 12px;
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -64,32 +90,37 @@ export const TagRow = styled.div`
 
 export const TagChip = styled.span`
   font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: #eef2f7;
-  color: #334155;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  background: var(--primary-soft);
+  color: var(--primary-600);
 `;
 
 export const SuggestionsButton = styled.button`
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 1px solid #6366f1;
-  background: #6366f1;
-  color: #fff;
-  font-weight: 600;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--primary-600);
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  white-space: nowrap;
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s;
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.14s ease;
+
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.25);
+    background: var(--grad-brand);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 10px 22px rgba(99, 102, 241, 0.28);
   }
   &:active {
     transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
   }
 `;
