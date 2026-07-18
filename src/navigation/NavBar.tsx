@@ -57,6 +57,12 @@ const CalendarIcon = () => (
     <path d="M3.5 9.5h17M8 3v4M16 3v4" />
   </svg>
 );
+const NoteIcon = () => (
+  <svg {...iconProps}>
+    <path d="M5 3.5h9L19 8v12.5H5V3.5Z" />
+    <path d="M13.5 3.5V8H19M8 12h8M8 15.5h5" />
+  </svg>
+);
 const SunIcon = () => (
   <svg {...iconProps}>
     <circle cx="12" cy="12" r="4" />
@@ -97,6 +103,10 @@ export default function NavBar() {
         <VLink to="/not-todos">
           <BanIcon />
           Not Todos
+        </VLink>
+        <VLink to="/notes">
+          <NoteIcon />
+          Notes
         </VLink>
         <VLink to="/calendar">
           <CalendarIcon />

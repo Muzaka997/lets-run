@@ -10,6 +10,7 @@ import HomePage from "./pages/Home/HomePage";
 import { useAuth } from "./pages/Auth/hooks/useAuth";
 import CalendarPage from "./pages/Calendar/CalendarPage";
 import SidebarLayout from "./navigation/SidebarLayout";
+import NotesPage from "./pages/Notes/NotesPage";
 
 function RequireAuth({ children }: { children: ReactElement }) {
   const { me } = useAuth();
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="todos" element={<TodosPage />} />
         <Route path="not-todos" element={<NotTodosPage />} />
         <Route path="suggestions" element={<SuggestionsPage />} />
+        <Route path="notes" element={<NotesPage />} />
         <Route
           path="suggestions/not-todos"
           element={<NotTodoSuggestionsPage />}

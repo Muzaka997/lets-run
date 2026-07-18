@@ -47,6 +47,7 @@
   --grad-todo: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   --grad-nottodo: linear-gradient(135deg, #fb7185 0%, #f59e0b 100%);
   --grad-calendar: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%);
+  --grad-notes: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
 
   /* Page backdrop */
   --app-bg:
